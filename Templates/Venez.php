@@ -52,7 +52,7 @@ class Venez extends Regex {
 
         foreach ($result->contacts as $contactType => $contactArray) {
             foreach ($contactArray as $contactObject) {
-                $contactObject->email = html_entity_decode($contactObject->email);
+                $contactObject->email = html_entity_decode($contactObject->email, ENT_COMPAT | ENT_HTML401);
             }
         }
 
@@ -71,6 +71,6 @@ class Venez extends Regex {
 
     public function translateRawData($rawdata)
     {
-        return utf8_encode($rawdata);
+        return mb_convert_encoding($rawdata, 'UTF-8', 'ISO-8859-1');
     }
 }

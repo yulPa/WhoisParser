@@ -105,8 +105,8 @@ class Kg extends Regex
         
         foreach ($ResultSet->contacts as $contactType => $contactArray) {
             foreach ($contactArray as $contactObject) {
-                $contactObject->address = utf8_encode($contactObject->address);
-                $contactObject->name = utf8_encode($contactObject->name);
+                $contactObject->address = mb_convert_encoding($contactObject->address, 'UTF-8', 'ISO-8859-1');
+                $contactObject->name = mb_convert_encoding($contactObject->name, 'UTF-8', 'ISO-8859-1');
             }
         }
     }

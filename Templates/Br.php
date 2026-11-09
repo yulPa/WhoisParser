@@ -79,6 +79,6 @@ class Br extends Regex
 
     public function translateRawData($rawdata)
     {
-        return utf8_encode($rawdata);
+        return mb_convert_encoding($rawdata, 'UTF-8', 'ISO-8859-1');
     }
 }

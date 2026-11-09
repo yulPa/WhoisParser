@@ -93,7 +93,7 @@ class Fi extends Regex
         
         foreach ($ResultSet->contacts as $contactType => $contactArray) {
             foreach ($contactArray as $contactObject) {
-                $contactObject->organization = utf8_encode($contactObject->organization[0]);
+                $contactObject->organization = mb_convert_encoding($contactObject->organization[0], 'UTF-8', 'ISO-8859-1');
                 $contactObject->name = $contactObject->address[0];
                 $contactObject->zipcode = $contactObject->address[2];
                 $contactObject->city = $contactObject->address[3];

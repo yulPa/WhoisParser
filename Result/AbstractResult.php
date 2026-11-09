@@ -32,6 +32,7 @@ namespace Novutec\WhoisParser\Result;
  * @copyright  Copyright (c) 2007 - 2013 Novutec Inc. (http://www.novutec.com)
  * @license    http://www.apache.org/licenses/LICENSE-2.0
  */
+#[\AllowDynamicProperties]
 abstract class AbstractResult
 {
 

@@ -106,7 +106,7 @@ abstract class AbstractTemplate
         $obj = null;
 
         // Ensure the custom namespace ends with a \
-        $customNamespace = rtrim($customNamespace, '\\') .'\\';
+        $customNamespace = rtrim((string) $customNamespace, '\\') .'\\';
         if ((strpos($template, '\\') !== false) && class_exists($template, $customNamespace)) {
             $class = $template;
             $obj = new $class();
@@ -159,7 +159,7 @@ abstract class AbstractTemplate
         if (array_key_exists('encoding', $config)) {
             switch (strtolower($config['encoding'])) {
                 case 'iso-8859-1':
-                    $rawdata = utf8_encode($rawdata);
+                    $rawdata = mb_convert_encoding($rawdata, 'UTF-8', 'ISO-8859-1');
                     break;
             }
         }
