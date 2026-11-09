@@ -7,7 +7,7 @@ class Hu extends Standard
 
     public function parse($result, $rawdata)
     {
-        $rawdata = utf8_encode($rawdata);
+        $rawdata = mb_convert_encoding($rawdata, 'UTF-8', 'ISO-8859-1');
         parent::parse($result, $rawdata);
     }
 
@@ -25,6 +25,6 @@ class Hu extends Standard
 
     public function translateRawData($rawdata, $config)
     {
-        return utf8_encode($rawdata);
+        return mb_convert_encoding($rawdata, 'UTF-8', 'ISO-8859-1');
     }
 }

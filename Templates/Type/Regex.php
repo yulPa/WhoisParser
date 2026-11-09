@@ -40,10 +40,10 @@ abstract class Regex extends AbstractTemplate {
                         if ($this->convertFromHtml) {
                             if (is_array($value)) {
                                 foreach($value as $k => $v) {
-                                    $value[$k] = html_entity_decode(strip_tags($v));
+                                    $value[$k] = html_entity_decode(strip_tags($v), ENT_COMPAT | ENT_HTML401);
                                 }
                             } else {
-                                $value = html_entity_decode(strip_tags($value));
+                                $value = html_entity_decode(strip_tags($value), ENT_COMPAT | ENT_HTML401);
                             }
                         }
                         $result->addItem($target, $value);
@@ -88,7 +88,7 @@ abstract class Regex extends AbstractTemplate {
 
             $value = $matches[0];
             if ($this->convertFromHtml && (!is_array($value))) {
-                $value = html_entity_decode(strip_tags($value));
+                $value = html_entity_decode(strip_tags($value), ENT_COMPAT | ENT_HTML401);
             }
             $result->addItem('registered', empty($value));
         }

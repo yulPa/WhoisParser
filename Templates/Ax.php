@@ -85,14 +85,14 @@ class Ax extends Regex
         
         foreach ($ResultSet->contacts as $contactType => $contactArray) {
             foreach ($contactArray as $contactObject) {
-                $contactObject->name = utf8_encode($contactObject->name);
+                $contactObject->name = mb_convert_encoding($contactObject->name, 'UTF-8', 'ISO-8859-1');
                 if (is_array($contactObject->address)) {
                     foreach ($contactObject->address as $elem) {
-                        $filteredAddress[] = utf8_encode($elem);
+                        $filteredAddress[] = mb_convert_encoding($elem, 'UTF-8', 'ISO-8859-1');
                     }
                     $contactObject->address = $filteredAddress;
                 } else {
-                    $contactObject->address = utf8_encode($contactObject->address);
+                    $contactObject->address = mb_convert_encoding($contactObject->address, 'UTF-8', 'ISO-8859-1');
                 }
             }
         }

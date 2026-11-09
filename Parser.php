@@ -272,7 +272,7 @@ class Parser
             if ($this->cachePath !== null) {
                 $Parser->setCachePath($this->cachePath);
             }
-            $this->Query = $Parser->parse(filter_var($query, FILTER_SANITIZE_STRING));
+            $this->Query = $Parser->parse(str_replace(array('"', "'"), array('&#34;', '&#39;'), strip_tags((string) $query)));
         }
     }
 
@@ -287,7 +287,7 @@ class Parser
     public function call($query = '')
     {
         if ($query != '') {
-            $this->Query = filter_var($query, FILTER_SANITIZE_STRING);
+            $this->Query = str_replace(array('"', "'"), array('&#34;', '&#39;'), strip_tags((string) $query));
         }
         
         $Config = $this->Config->getCurrent();
@@ -471,7 +471,7 @@ class Parser
      */
     public function setFormat($format = 'object')
     {
-        $this->format = filter_var($format, FILTER_SANITIZE_STRING);
+        $this->format = str_replace(array('"', "'"), array('&#34;', '&#39;'), strip_tags((string) $format));
     }
 
     /**

@@ -417,7 +417,7 @@ class Result extends AbstractResult
                 $child = $xml->addChild($name);
 
                 foreach ($var as $firstKey => $firstValue) {
-                    $child->addChild('item', trim(htmlspecialchars($firstValue)));
+                    $child->addChild('item', trim(htmlspecialchars((string) $firstValue, ENT_COMPAT | ENT_HTML401)));
                 }
             } elseif (is_object($var)) {
                 // if variable is an object we need to convert it to array
@@ -429,12 +429,12 @@ class Result extends AbstractResult
 
                     foreach ($firstArray as $firstKey => $firstValue) {
                         if (! is_array($firstValue)) {
-                            $child->addChild($firstKey, trim(htmlspecialchars($firstValue)));
+                            $child->addChild($firstKey, trim(htmlspecialchars((string) $firstValue, ENT_COMPAT | ENT_HTML401)));
                         } else {
                             $secondChild = $child->addChild($firstKey);
 
                             foreach ($firstValue as $secondKey => $secondString) {
-                                $secondChild->addChild('item', trim(htmlspecialchars($secondString)));
+                                $secondChild->addChild('item', trim(htmlspecialchars((string) $secondString, ENT_COMPAT | ENT_HTML401)));
                             }
                         }
                     }
@@ -451,7 +451,7 @@ class Result extends AbstractResult
                             $firstArray = $firstValue->toArray();
 
                             foreach ($firstArray as $secondKey => $secondValue) {
-                                $secondChild->addChild($secondKey, trim(htmlspecialchars($secondValue)));
+                                $secondChild->addChild($secondKey, trim(htmlspecialchars((string) $secondValue, ENT_COMPAT | ENT_HTML401)));
                             }
                         } elseif (is_array($firstValue)) {
                             $secondChild = $child->addChild($firstKey);
@@ -462,12 +462,12 @@ class Result extends AbstractResult
 
                                 foreach ($secondArray as $thirdKey => $thirdValue) {
                                     if (! is_array($thirdValue)) {
-                                        $thirdChild->addChild($thirdKey, trim(htmlspecialchars($thirdValue)));
+                                        $thirdChild->addChild($thirdKey, trim(htmlspecialchars((string) $thirdValue, ENT_COMPAT | ENT_HTML401)));
                                     } else {
                                         $fourthChild = $thirdChild->addChild($thirdKey);
 
                                         foreach ($thirdValue as $fourthKey => $fourthValue) {
-                                            $fourthChild->addChild('item', trim(htmlspecialchars($fourthValue)));
+                                            $fourthChild->addChild('item', trim(htmlspecialchars((string) $fourthValue, ENT_COMPAT | ENT_HTML401)));
                                         }
                                     }
                                 }
@@ -478,7 +478,7 @@ class Result extends AbstractResult
                     }
                 }
             } else {
-                $xml->addChild($name, trim($var));
+                $xml->addChild($name, trim((string) $var));
             }
         }
 
@@ -548,6 +548,58 @@ class Result extends AbstractResult
             $timestamp = strtotime(str_replace('/', '.', $date));
         }
 
-        return (strlen($timestamp) ? strftime($dateformat, $timestamp) : $date);
+        return (strlen($timestamp) ? $this->strftimeCompat($dateformat, $timestamp) : $date);
+    }
+
+    /**
+     * Replacement for strftime() (deprecated since PHP 8.1): converts the
+     * strftime() format to a date() format.
+     *
+     * @param  string $dateformat
+     * @param  integer $timestamp
+     * @return string
+     */
+    private function strftimeCompat($dateformat, $timestamp)
+    {
+        $map = array(
+            'a' => 'D', 'A' => 'l', 'd' => 'd', 'e' => 'j', 'j' => 'z', 'u' => 'N', 'w' => 'w',
+            'V' => 'W', 'W' => 'W', 'b' => 'M', 'h' => 'M', 'B' => 'F', 'm' => 'm', 'y' => 'y',
+            'Y' => 'Y', 'G' => 'o', 'g' => 'y', 'H' => 'H', 'k' => 'G', 'I' => 'h', 'l' => 'g',
+            'M' => 'i', 'p' => 'A', 'P' => 'a', 'r' => 'h:i:s A', 'R' => 'H:i', 'S' => 's',
+            'T' => 'H:i:s', 'X' => 'H:i:s', 'D' => 'm/d/y', 'F' => 'Y-m-d', 's' => 'U',
+            'z' => 'O', 'Z' => 'T', 'c' => 'D M j H:i:s Y', 'x' => 'm/d/y',
+        );
+        $result = '';
+        $length = strlen($dateformat);
+        for ($i = 0; $i < $length; $i++) {
+            $char = $dateformat[$i];
+            if ($char !== '%' || $i + 1 >= $length) {
+                $result .= $char;
+                continue;
+            }
+            $spec = $dateformat[++$i];
+            if ($spec === '%') {
+                $result .= '%';
+            } elseif ($spec === 'n') {
+                $result .= "\n";
+            } elseif ($spec === 't') {
+                $result .= "\t";
+            } elseif ($spec === 'j') {
+                $result .= sprintf('%03d', date('z', $timestamp) + 1);
+            } elseif ($spec === 'e') {
+                $result .= sprintf('%2d', date('j', $timestamp));
+            } elseif ($spec === 'W') {
+                $result .= sprintf('%02d', intdiv(date('z', $timestamp) + 7 - ((date('w', $timestamp) + 6) % 7), 7));
+            } elseif ($spec === 'c') {
+                $result .= date('D M ', $timestamp) . sprintf('%2d', date('j', $timestamp)) . date(' H:i:s Y', $timestamp);
+            } elseif ($spec === 'k' || $spec === 'l') {
+                $result .= sprintf('%2d', date($map[$spec], $timestamp));
+            } elseif (isset($map[$spec])) {
+                $result .= date($map[$spec], $timestamp);
+            } else {
+                $result .= '%' . $spec;
+            }
+        }
+        return $result;
     }
 }

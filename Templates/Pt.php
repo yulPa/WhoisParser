@@ -96,7 +96,7 @@ class Pt extends Regex
         
         foreach ($ResultSet->contacts as $contactType => $contactArray) {
             foreach ($contactArray as $contactObject) {
-                $contactObject->address = array_map('utf8_encode', explode("\n", trim($contactObject->address)));
+                $contactObject->address = array_map(function ($value) { return mb_convert_encoding($value, 'UTF-8', 'ISO-8859-1'); }, explode("\n", trim($contactObject->address)));
                 $contactObject->address = array_map('trim', $contactObject->address);
                 
                 if (sizeof($contactObject->address) > 1) {
@@ -109,7 +109,7 @@ class Pt extends Regex
                     $contactObject->organization = $contactObject->address[0];
                 }
                 
-                $contactObject->name = utf8_encode($contactObject->name);
+                $contactObject->name = mb_convert_encoding($contactObject->name, 'UTF-8', 'ISO-8859-1');
                 
                 if (strpos($contactObject->email, ';')) {
                     $contactObject->email = explode(';', $contactObject->email);
